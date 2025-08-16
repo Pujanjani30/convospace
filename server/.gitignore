@@ -13,7 +13,7 @@ logs/
 # Build artifacts
 build/
 dist/
-public/ # If used for compiled assets, otherwise keep it if it's source
+public/
 
 # Environment variables
 .env
