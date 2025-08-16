@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 
-import Auth from "./pages/Auth"
+import Auth from "./pages/auth"
 import Chat from "./pages/chat"
 import Profile from "./pages/profile"
 
