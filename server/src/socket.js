@@ -69,17 +69,6 @@ const setupSocket = (server) => {
       console.warn("User ID not provided in handshake query");
     }
 
-    // // Handle manual status updates (away, busy, etc.)
-    // socket.on("updateStatus", (status) => {
-    //   if (userId) {
-    //     io.emit("userStatusChanged", {
-    //       userId,
-    //       status,
-    //       isOnline: status !== 'offline'
-    //     });
-    //   }
-    // });
-
     // Handle typing indicators
     socket.on("typing", (data) => {
       const recipientSocketId = userSocketMap.get(data.recipientId);

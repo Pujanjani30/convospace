@@ -1,6 +1,6 @@
 import Message from "../models/message.model.js";
-import { mkdirSync, renameSync } from "fs";
 import { successResponse, errorResponse } from "../utils/httpResponse.js"
+import { uploadToCloudinary } from "../utils/cloudinary.js"
 
 export const getMessages = async (req, res) => {
   try {
@@ -74,15 +74,13 @@ export const uploadMessageFile = async (req, res) => {
     if (!file)
       throw { status: 400, message: "File is required." }
 
-    const fileName = `public/uploads/files/${Date.now()}-${crypto.randomUUID()}.${file.originalname.split('.').pop()}`;
-    mkdirSync('public/uploads/files', { recursive: true });
-    renameSync(file.path, fileName);
+    const { url: fileURL } = await uploadToCloudinary(file.buffer, "ConvoSpace/uploads");
 
     return successResponse({
       res,
       status: 200,
       message: "Success.",
-      data: { filePath: fileName }
+      data: { fileURL }
     });
 
   } catch (error) {

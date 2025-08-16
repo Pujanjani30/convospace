@@ -45,11 +45,14 @@ const ProfileInfo = () => {
       <div className="flex gap-3 items-center justify-center">
         <div className="w-12 h-12 relative">
           <Avatar className="h-12 w-12 rounded-full overflow-hidden">
-            <AvatarImage
-              src={`${HOST}/${userInfo?.profilePic}`}
-              alt="Profile Pic"
-              className="object-cover w-full h-full"
-            />
+            {
+              userInfo.profilePic &&
+              <AvatarImage
+                src={userInfo?.profilePic}
+                alt="Profile Pic"
+                className="object-cover w-full h-full"
+              />
+            }
             <AvatarFallback className={`uppercase h-12 w-12 text-lg border-[1px] flex items-center justify-center 
             ${getColor(userInfo?.profileColor)}`}>
               {userInfo?.firstName

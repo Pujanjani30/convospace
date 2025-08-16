@@ -62,13 +62,15 @@ const MessageBar = () => {
             }
           );
 
+          console.log(response)
           if (response.status !== 200) {
             setIsUploading(false);
             toast.error("Somthing went wrong while sending the file!")
             return;
           }
 
-          fileUrl = response.data.data.filePath;
+          fileUrl = response.data.data.fileURL;
+          console.log("fileUrl", fileUrl);
         } catch (error) {
           console.log(error);
         } finally {

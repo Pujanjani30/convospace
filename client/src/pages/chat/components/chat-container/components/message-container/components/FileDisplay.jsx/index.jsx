@@ -3,7 +3,7 @@ import { Folder, CircleArrowDown, Eye, Download, FileText, Image, Video, Music, 
 import { HOST } from "@/utils/constants";
 import apiClient from '@/lib/api-client';
 
-const FileDisplay = ({ message, renderFor, handleShowImage }) => {
+const FileDisplay = ({ message, renderFor, downloadFile, handleShowImage, }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -14,21 +14,6 @@ const FileDisplay = ({ message, renderFor, handleShowImage }) => {
     const imageRegex =
       /\.(jpg|jpeg|png|gif|bmp|tiff|tif|webp|svg|ico|heic|heif)$/i;
     return imageRegex.test(filePath);
-  }
-
-  const downloadFile = async (fileUrl) => {
-    const response = await apiClient.get(`${HOST}/${fileUrl}`, {
-      responseType: "blob",
-    })
-
-    const urlBlob = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement("a");
-    link.href = urlBlob;
-    link.setAttribute("download", fileUrl.split("/").pop());
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(urlBlob);
   }
 
   const getFileIcon = (extension) => {
@@ -82,7 +67,7 @@ const FileDisplay = ({ message, renderFor, handleShowImage }) => {
         <div className="relative">
           {
             !imageError && <img
-              src={`${HOST}/${message.fileUrl}`}
+              src={message.fileUrl}
               alt={fileName}
               className={`w-full h-auto max-h-80 object-cover transition-all 
               duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'

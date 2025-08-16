@@ -1,29 +1,29 @@
 import multer from 'multer';
 import { errorResponse } from '../utils/httpResponse.js';
 
+const storage = multer.memoryStorage();
+
 // Common upload configuration
-const uploadFile = (destination = 'public/uploads', maxSize = 5, allowedTypes = /jpeg|jpg|png|svg|webp/) => {
+const uploadFile = (maxSize = 5, allowedTypes = /jpeg|jpg|png|svg|webp/) => {
   return multer({
-    dest: destination,
+    storage,
     limits: { fileSize: maxSize * 1024 * 1024 }, // Convert MB to bytes
     fileFilter: (req, file, cb) => {
+      console.log('Uploaded file:', file);
       try {
         const fileExtension = file.originalname.split('.').pop()?.toLowerCase();
+        const mimeType = file.mimetype.split('/').pop()?.toLowerCase();
 
         const isExtensionAllowed = allowedTypes.test(fileExtension);
+        const isMimeTypeAllowed = allowedTypes.test(mimeType);
 
-        const isMimetypeAllowed = allowedTypes.test(file.mimetype) ||
-          file.mimetype.includes('application/') || // for documents
-          file.mimetype.includes('text/') || // for text files
-          file.mimetype.includes('video/') || // for videos
-          file.mimetype.includes('audio/'); // for audio files
-
-        if (isExtensionAllowed) {
+        if (isExtensionAllowed && isMimeTypeAllowed) {
           return cb(null, true);
         } else {
           cb(new Error(`File type .${fileExtension} not supported!`));
         }
       } catch (error) {
+        console.log('File upload error:', error);
         cb(new Error('Invalid file format!'));
       }
     }
@@ -61,14 +61,14 @@ export const handleMulterError = (error, req, res, next) => {
 
 
 // Specific middleware exports
-export const uploadProfilePic = uploadFile('public/uploads/profiles').single('profilePic');
+export const uploadProfilePic = uploadFile().single('profilePic');
 
 // Multi-file upload middleware
-export const uploadMultipleFiles = (fieldName, destination, maxSize = 5) => {
-  return uploadFile(destination, maxSize).array(fieldName);
+export const uploadMultipleFiles = (fieldName, maxSize = 5, allowedTypes) => {
+  return uploadFile(maxSize, allowedTypes).array(fieldName);
 };
 
 // Generic middleware for any single file
-export const uploadSingleFile = (fieldName, destination, maxSize = 5, allowedTypes) => {
-  return uploadFile(destination, maxSize, allowedTypes).single(fieldName);
+export const uploadSingleFile = (fieldName, maxSize = 5, allowedTypes) => {
+  return uploadFile(maxSize, allowedTypes).single(fieldName);
 };

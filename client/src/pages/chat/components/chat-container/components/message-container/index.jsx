@@ -56,19 +56,29 @@ const MessageContainer = () => {
   }
 
   const downloadFile = async (fileUrl) => {
-    const response = await apiClient.get(`${HOST}/${fileUrl}`, {
-      responseType: "blob",
-    })
+    try {
+      // Fetch directly from Cloudinary
+      const response = await apiClient.get(fileUrl, {
+        responseType: "blob",
+      });
 
-    const urlBlob = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement("a");
-    link.href = urlBlob;
-    link.setAttribute("download", fileUrl.split("/").pop());
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(urlBlob);
-  }
+      // Create Blob URL
+      const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = urlBlob;
+
+      const filename = fileUrl.split("/").pop().split("?")[0] || `file-${Date.now()}`;
+      link.setAttribute("download", filename);
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(urlBlob);
+    } catch (error) {
+      toast.error("Failed to download file. Please try again later.");
+    }
+  };
 
   const cancelShowImage = () => {
     setImageURL(null);
@@ -177,7 +187,7 @@ const MessageContainer = () => {
           </div>
           <div>
             <img
-              src={`${HOST}/${imageURL}`}
+              src={imageURL}
               alt="Image"
               className="h-[80vh] w-full bg-cover"
             />

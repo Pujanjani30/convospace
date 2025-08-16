@@ -21,9 +21,6 @@ app.use(cookieParser());
 app.use(express.json({ limit: '5mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/public/uploads/profiles', express.static('public/uploads/profiles'));
-app.use('/public/uploads/files', express.static('public/uploads/files'));
-
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',

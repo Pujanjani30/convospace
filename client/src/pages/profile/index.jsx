@@ -48,7 +48,7 @@ const Profile = () => {
     if (userInfo?.profilePic) {
       setProfileData(prev => ({
         ...prev,
-        profilePic: `${HOST}/${userInfo.profilePic}`
+        profilePic: userInfo.profilePic
       }));
     }
   }, [userInfo]);

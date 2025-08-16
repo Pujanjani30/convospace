@@ -1,8 +1,7 @@
 import User from "../models/user.model.js"
 import { successResponse, errorResponse } from "../utils/httpResponse.js"
 import { generateJwtToken } from "../utils/jwtToken.js"
-import { mkdirSync, renameSync, unlinkSync } from "fs";
-import crypto from 'crypto';
+import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js"
 
 const maxAge = 3 * 24 * 60 * 60 * 1000;
 
@@ -162,13 +161,13 @@ export const addProfilePic = async (req, res) => {
     if (!file)
       throw { status: 400, message: "Profile picture is required." }
 
-    const fileName = `public/uploads/profiles/${Date.now()}-${crypto.randomUUID()}.${file.originalname.split('.').pop()}`;
-    mkdirSync('public/uploads/profiles', { recursive: true });
-    renameSync(file.path, fileName);
+    const { url: fileURL } = await uploadToCloudinary(file.buffer, "ConvoSpace/profiles");
+
+    console.log("fileURL", fileURL);
 
     const { userId } = req.user;
     const userData = await User.findByIdAndUpdate(userId, {
-      profilePic: fileName
+      profilePic: fileURL
     }, { new: true, runValidators: true }).select("-password");
 
     return successResponse({
@@ -197,7 +196,7 @@ export const removeProfilePic = async (req, res) => {
       throw { status: 404, message: "User not found." }
 
     if (user.profilePic)
-      unlinkSync(user.profilePic);
+      await deleteFromCloudinary(user.profilePic);
 
     user.profilePic = null;
 

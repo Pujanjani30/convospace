@@ -12,7 +12,7 @@ messageRoutes.get("/get-messages", verifyToken, getMessages);
 messageRoutes.post("/update-unseen-messages", verifyToken, updateUnSeenMessages);
 messageRoutes.post("/upload-message-file",
   verifyToken,
-  uploadSingleFile("file", "public/uploads/files", 5, allowedTypes),
+  uploadSingleFile("file", 5, allowedTypes),
   handleMulterError,
   uploadMessageFile
 );
