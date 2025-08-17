@@ -185,11 +185,11 @@ const MessageContainer = () => {
               <X onClick={cancelShowImage} />
             </button>
           </div>
-          <div>
+          <div className="p-5 md:p-0">
             <img
               src={imageURL}
               alt="Image"
-              className="h-[80vh] w-full bg-cover"
+              className="md:h-[80vh] w-full bg-cover"
             />
           </div>
         </div>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Folder, CircleArrowDown, Eye, Download, FileText, Image, Video, Music, Archive, FileCode } from 'lucide-react';
-import { HOST } from "@/utils/constants";
-import apiClient from '@/lib/api-client';
+import { Folder, CircleArrowDown, Eye, Download, FileText, Image, Video, Music, Archive, FileCode, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const FileDisplay = ({ message, renderFor, downloadFile, handleShowImage, }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -95,27 +94,63 @@ const FileDisplay = ({ message, renderFor, downloadFile, handleShowImage, }) => 
           )}
 
           {/* Overlay with actions */}
-          {!imageError && <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all
-           duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleShowImage(message.fileUrl)}
-                className="bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full 
+          {
+            !imageError &&
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all
+               duration-300 items-center justify-center hidden group-hover:flex">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handleShowImage(message.fileUrl)}
+                  className="bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full 
                 shadow-lg transform hover:scale-110 transition-all duration-200"
-                aria-label="View full image"
-              >
-                <Eye className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => downloadFile(message.fileUrl)}
-                className="bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full 
+                  aria-label="View full image"
+                >
+                  <Eye />
+                </button>
+                <button
+                  onClick={() => downloadFile(message.fileUrl)}
+                  className="bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full 
                 shadow-lg transform hover:scale-110 transition-all duration-200"
-                aria-label="Download image"
-              >
-                <Download className="w-5 h-5" />
-              </button>
+                  aria-label="Download image"
+                >
+                  <Download />
+                </button>
+              </div>
             </div>
-          </div>}
+          }
+
+          {/* Action dropdown for mobile */}
+          {
+            !imageError &&
+            <div className="absolute top-0 right-0 md:hidden">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 outline-none"
+                    aria-label="Open menu"
+                  >
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuItem
+                    onClick={() => handleShowImage(message.fileUrl)}
+                    className="flex items-center gap-2"
+                  >
+                    <Eye />
+                    <span className="text-sm">View</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => downloadFile(message.fileUrl)}
+                    className="flex items-center gap-2"
+                  >
+                    <Download />
+                    <span className="text-sm">Download</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          }
         </div>
 
         {/* Image info bar */}
@@ -124,7 +159,7 @@ const FileDisplay = ({ message, renderFor, downloadFile, handleShowImage, }) => 
             {fileName}
           </p>
         </div> */}
-      </div>
+      </div >
     );
   }
 
