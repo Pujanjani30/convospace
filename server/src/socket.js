@@ -6,7 +6,8 @@ const setupSocket = (server) => {
     cors: {
       origin: process.env.ORIGIN,
       credentials: true,
-    }
+    },
+    path: "/socket.io"
   });
 
   const userSocketMap = new Map();
@@ -55,7 +56,7 @@ const setupSocket = (server) => {
   };
 
   io.on("connection", (socket) => {
-    const userId = socket.handshake.query.userId;
+    const userId = socket.handshake.auth.userId;
 
     if (userId) {
       userSocketMap.set(userId, socket.id);

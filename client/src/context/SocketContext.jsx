@@ -17,10 +17,10 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (userInfo) {
       socketRef.current = io(HOST, {
+        transports: ["websocket"],  // avoid long polling if possible
         withCredentials: true,
-        query: {
-          userId: userInfo._id
-        },
+        path: "/socket.io",
+        auth: { userId: userInfo._id }
       });
 
       // Your existing message handler
