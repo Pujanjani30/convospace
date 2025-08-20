@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getColor } from "@/lib/utils";
 import { useAppStore } from "@/store";
-import { HOST } from "@/utils/constants";
 import { X } from "lucide-react"
 import moment from "moment";
 
@@ -12,7 +11,8 @@ const ChatHeader = () => {
     selectedChatData,
     isUserOnline,
     isUserTyping,
-    getUserLastSeen
+    getUserLastSeen,
+    // typingUsers
   } = useAppStore();
 
   const isOnline = selectedChatData && selectedChatType === "dm" ? isUserOnline(selectedChatData._id) : false;
@@ -22,6 +22,7 @@ const ChatHeader = () => {
   const getStatusDisplay = () => {
     if (selectedChatType !== "dm" || !selectedChatData) return null;
 
+    // if (isTyping?.selectedChatType === "dm") {
     if (isTyping) {
       return (
         <div className="flex items-center gap-2">
@@ -102,6 +103,23 @@ const ChatHeader = () => {
                 <span className="text-white font-medium">
                   {selectedChatData.name}
                 </span>
+                {/* {
+                  typingUsers.size === 0 && <span className="text-gray-400 text-xs">
+                    {selectedChatData.members?.length || 0} members
+                  </span>
+                }
+
+                {
+                  typingUsers.size > 0 && (
+                    <span className="text-blue-400 text-xs">
+                      {
+                        Array.from(typingUsers.values())
+                          .map(user => user?.firstName).join(", ")
+                      } typing...
+                    </span>
+                  )
+                } */}
+
                 <span className="text-gray-400 text-xs">
                   {selectedChatData.members?.length || 0} members
                 </span>

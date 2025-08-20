@@ -24,7 +24,7 @@ export const createOnlineStatusSlice = (set, get) => ({
 
   setTypingUsers: (typingUsers) => set({ typingUsers }),
 
-  setUserTyping: (userId, isTyping) => set((state) => {
+  setUserTyping: (userId, isTyping, selectedChatType) => set((state) => {
     const newTypingUsers = new Map(state.typingUsers);
     if (isTyping) {
       newTypingUsers.set(userId, Date.now());

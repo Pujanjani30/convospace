@@ -88,6 +88,25 @@ export const SocketProvider = ({ children }) => {
         setDmContacts(updatedContacts);
       };
 
+      const handleReceiveChannelMessage = (message) => {
+        const {
+          selectedChatType,
+          selectedChatData,
+          addMessage,
+          userInfo
+        } = useAppStore.getState();
+
+        const isCurrentChat =
+          selectedChatType !== undefined &&
+          selectedChatData &&
+          (selectedChatData._id === message.channelId);
+
+        if (isCurrentChat) {
+          addMessage(message);
+        }
+
+      };
+
       // Handle initial online users list (when you first connect)
       const handleOnlineUsers = (onlineUserIds) => {
         const { setOnlineUsers } = useAppStore.getState();
@@ -104,10 +123,15 @@ export const SocketProvider = ({ children }) => {
 
       // Handle typing indicators
       const handleUserTyping = (data) => {
-        const { setUserTyping } = useAppStore.getState();
-        const { userId, isTyping } = data;
+        const { setUserTyping, typingUsers, setTypingUsers } = useAppStore.getState();
+        const { user, isTyping, /* selectedChatType */ } = data;
 
-        setUserTyping(userId, isTyping);
+        // selectedChatType === "dm" && setUserTyping(user.userId, isTyping);
+        setUserTyping(user.userId, isTyping)
+
+        // const typingUsersCopy = new Map(typingUsers);
+        // typingUsersCopy.set(user.userId, { firstName: user.firstName, isTyping });
+        // selectedChatType === "channel" && setTypingUsers(typingUsersCopy);
 
         // Auto-cleanup typing indicator after 3 seconds
         if (isTyping) {
@@ -120,6 +144,7 @@ export const SocketProvider = ({ children }) => {
 
       // Socket event listeners
       socketRef.current.on("receiveMessage", handleReceiveMessage);
+      socketRef.current.on("receiveChannelMessage", handleReceiveChannelMessage);
       socketRef.current.on("onlineUsers", handleOnlineUsers);
       socketRef.current.on("userStatusChanged", handleUserStatusChanged);
       socketRef.current.on("userTyping", handleUserTyping);
@@ -139,6 +164,13 @@ export const SocketProvider = ({ children }) => {
     }
   };
 
+  // const emitChannelTyping = (channelId, isTyping, userId) => {
+  //   if (socketRef.current) {
+  //     console.log(`Emitting channel typing status: ${isTyping} for channel ${channelId} by user ${userId}`);
+  //     socketRef.current.emit("channelTyping", { channelId, isTyping, userId });
+  //   }
+  // };
+
   const updateUserStatus = (status) => {
     if (socketRef.current) {
       console.log(`Updating user status to: ${status}`);
@@ -149,6 +181,7 @@ export const SocketProvider = ({ children }) => {
   const socketValue = {
     socket: socketRef.current,
     emitTyping,
+    // emitChannelTyping,
     updateUserStatus
   };
 

@@ -19,6 +19,7 @@ export const signup = async (req, res) => {
     const user = await User.create({ email, password });
 
     res.cookie("token", generateJwtToken({ userId: user._id, email }), {
+      httpOnly: true,
       maxAge,
       secure: true,
       sameSite: "None"
@@ -66,6 +67,7 @@ export const login = async (req, res) => {
       throw { status: 401, message: "Invalid email or password." }
 
     res.cookie("token", generateJwtToken({ userId: existingUser._id, email }), {
+      httpOnly: true,
       maxAge,
       secure: true,
       sameSite: "None"

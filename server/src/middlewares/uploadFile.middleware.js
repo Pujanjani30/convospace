@@ -9,7 +9,6 @@ const uploadFile = (maxSize = 5, allowedTypes = /jpeg|jpg|png|svg|webp/) => {
     storage,
     limits: { fileSize: maxSize * 1024 * 1024 }, // Convert MB to bytes
     fileFilter: (req, file, cb) => {
-      console.log('Uploaded file:', file);
       try {
         const fileExtension = file.originalname.split('.').pop()?.toLowerCase();
         const mimeType = file.mimetype.split('/').pop()?.toLowerCase();

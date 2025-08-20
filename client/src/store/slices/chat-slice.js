@@ -7,6 +7,7 @@ export const createChatSlice = (set, get) => ({
   isDownloading: false,
   fileUploadProgress: 0,
   fileDownloadProgress: 0,
+  channels: [],
 
   setSelectedChatType: (type) => { set({ selectedChatType: type }) },
 
@@ -23,6 +24,8 @@ export const createChatSlice = (set, get) => ({
   setFileUploadProgress: (progress) => { set({ fileUploadProgress: progress }) },
 
   setFileDownloadProgress: (progress) => { set({ fileDownloadProgress: progress }) },
+
+  setChannels: (channels) => { set({ channels }) },
 
   closeChat: () => {
     set({
@@ -44,4 +47,9 @@ export const createChatSlice = (set, get) => ({
       }]
     })
   },
+
+  addChannel: (channel) => {
+    const channels = get().channels;
+    set({ channels: [channel, ...channels] });
+  }
 })

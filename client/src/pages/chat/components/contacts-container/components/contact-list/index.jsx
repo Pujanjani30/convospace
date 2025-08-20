@@ -1,7 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getColor } from "@/lib/utils";
 import { useAppStore } from "@/store"
-import { HOST } from "@/utils/constants";
 import moment from "moment";
 
 const ContactList = ({ contacts, isChannel = false }) => {
@@ -36,6 +35,8 @@ const ContactList = ({ contacts, isChannel = false }) => {
 
           const isOnline = !isChannel && isUserOnline(contact._id);
           const isTyping = !isChannel && isUserTyping(contact._id);
+
+          console.log("isTyping", isTyping);
 
           return (
             <div
@@ -79,7 +80,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
                 }
                 {
                   isChannel && (
-                    <div className="bg-[#ffffff22] h-10 w-10 flex items-center justify-center rounded-full">
+                    <div className="bg-[#ffffff22] h-10 w-10 flex items-center justify-center rounded-full text-2xl">
                       #
                     </div>
                   )
@@ -94,6 +95,7 @@ const ContactList = ({ contacts, isChannel = false }) => {
 
                         {/* Status text with typing indicator */}
                         <div className="text-xs">
+                          {/* {isTyping?.selectedChatType === "dm" && ( */}
                           {isTyping && (
                             <span className="text-blue-400 italic flex items-center gap-1">
                               {/* <div className="flex gap-0.5">

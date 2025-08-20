@@ -7,7 +7,7 @@ import './configs/db.config.js'
 
 import setupSocket from './socket.js'
 
-import { authRoutes, contactRoutes, messageRoutes } from "./routes/index.js"
+import { authRoutes, contactRoutes, messageRoutes, channelRoutes } from "./routes/index.js"
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -33,6 +33,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/channels', channelRoutes);
 
 app.use(/(.*)/, (req, res) => {
   return res.status(404).send("404 Not Found!")

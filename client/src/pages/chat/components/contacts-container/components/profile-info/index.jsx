@@ -97,19 +97,19 @@ const ProfileInfo = () => {
               <DialogTitle>Confirm Logout</DialogTitle>
             </DialogHeader>
             <p>Are you sure you want to log out?</p>
-            <DialogFooter>
+            <DialogFooter className="flex gap-5">
               <DialogClose>
                 <Button
                   type="button"
                   variant="outline"
-                  className="text-white bg-[#2a2b33]"
+                  className="text-white bg-[#2a2b33] w-full"
                 >
                   Cancel
                 </Button>
               </DialogClose>
               <Button
+                type="button"
                 variant="destructive"
-                className=" "
                 onClick={handleLogout}
               >
                 Logout

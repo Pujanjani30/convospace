@@ -20,9 +20,9 @@ const MessageBar = () => {
     selectedChatData,
     userInfo,
     setIsUploading,
-    setFileUploadProgress
+    setFileUploadProgress,
   } = useAppStore();
-  const { socket, emitTyping } = useSocket();
+  const { socket, emitTyping, emitChannelTyping } = useSocket();
 
   const fileRef = useRef(null);
   const emojiRef = useRef(null);
@@ -45,39 +45,38 @@ const MessageBar = () => {
   }, [message, file]);
 
   const handleSendMessage = async () => {
-    if (selectedChatType === "dm") {
-      let fileUrl = null;
-
-      if (messageType === "file") {
-        try {
-          const formData = new FormData();
-          formData.append("file", file);
-          setIsUploading(true);
-          const response = await apiClient.post(UPLOAD_MESSAGE_FILE_ROUTE,
-            formData,
-            {
-              withCredentials: true,
-              onUploadProgress: (data) =>
-                setFileUploadProgress(Math.round((100 * data.loaded) / data.total))
-            }
-          );
-
-          console.log(response)
-          if (response.status !== 200) {
-            setIsUploading(false);
-            toast.error("Somthing went wrong while sending the file!")
-            return;
+    let fileUrl = null;
+    if (messageType === "file") {
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        setIsUploading(true);
+        const response = await apiClient.post(UPLOAD_MESSAGE_FILE_ROUTE,
+          formData,
+          {
+            withCredentials: true,
+            onUploadProgress: (data) =>
+              setFileUploadProgress(Math.round((100 * data.loaded) / data.total))
           }
+        );
 
-          fileUrl = response.data.data.fileURL;
-          console.log("fileUrl", fileUrl);
-        } catch (error) {
-          console.log(error);
-        } finally {
+        console.log(response)
+        if (response.status !== 200) {
           setIsUploading(false);
+          toast.error("Somthing went wrong while sending the file!")
+          return;
         }
-      }
 
+        fileUrl = response.data.data.fileURL;
+        console.log("fileUrl", fileUrl);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
+    if (selectedChatType === "dm") {
       const newMessage = {
         sender: userInfo._id,
         recipient: selectedChatData._id,
@@ -91,6 +90,21 @@ const MessageBar = () => {
       setFile(null);
       setMessageType("text");
     }
+
+    if (selectedChatType === "channel") {
+      const newChannelMessage = {
+        sender: userInfo._id,
+        channelId: selectedChatData._id,
+        messageType,
+        content: messageType === "text" ? message : undefined,
+        fileUrl: messageType === "file" ? fileUrl : undefined
+      }
+
+      socket.emit("sendChannelMessage", newChannelMessage);
+      setMessage("");
+      setFile(null);
+      setMessageType("text");
+    }
   }
 
   let typingTimeout;
@@ -98,18 +112,35 @@ const MessageBar = () => {
   const handleInputChange = (e) => {
     setMessage(e.target.value);
 
-    const { setUserTyping, isUserTyping } = useAppStore.getState();
+    const { setUserTyping, isUserTyping, typingUsers, setTypingUsers, selectedChatType } = useAppStore.getState();
 
     if (!isUserTyping(userInfo._id)) {
-      setUserTyping(userInfo._id, true);
+      // selectedChatType === "dm" && setUserTyping(userInfo._id, true, selectedChatType);
+      setUserTyping(userInfo._id, true)
+
       emitTyping(selectedChatData._id, true);
+
+      // const typingUsersCopy = new Map(typingUsers);
+      // typingUsersCopy.set(userInfo._id, { firstName: userInfo.firstName, isTyping: true, selectedChatType });
+      // selectedChatType === "channel" && setTypingUsers(typingUsersCopy);
+
+      // selectedChatType === "dm" && emitTyping(selectedChatData._id, true);
+      // selectedChatType === "channel" && emitChannelTyping(selectedChatData._id, true, userInfo._id);
     }
 
     // Reset stop-typing timer
     clearTimeout(typingTimeout);
     typingTimeout = setTimeout(() => {
+      // selectedChatType === "dm" && setUserTyping(userInfo._id, false);
       setUserTyping(userInfo._id, false);
-      emitTyping(selectedChatData._id, false);
+      emitTyping(selectedChatData._id, false)
+
+      // const typingUsersCopy = new Map(typingUsers);
+      // typingUsersCopy.delete(userInfo._id);
+      // selectedChatType === "channel" && setTypingUsers(typingUsersCopy);
+
+      // selectedChatType === "dm" && emitTyping(selectedChatData._id, false);
+      // selectedChatType === "channel" && emitChannelTyping(selectedChatData._id, false, userInfo._id);
     }, 2000);
   }
 

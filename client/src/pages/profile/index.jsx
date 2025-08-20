@@ -285,7 +285,7 @@ const Profile = () => {
         </div>
         <div className="w-full">
           <Button
-            className="w-full py-6 bg-purple-700 hover:bg-purple-900 
+            className="w-full py-6 bg-blue-700 hover:bg-blue-800
           transition-all duration-300 cursor-pointer text-md"
             onClick={saveChanges}
             disabled={loading || !profileData?.firstName || !profileData?.lastName}

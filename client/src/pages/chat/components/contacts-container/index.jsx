@@ -3,12 +3,13 @@ import Logo from "@/assets/convospace_logo.png"
 import ProfileInfo from "./components/profile-info";
 import NewDM from "./components/new-dm";
 import apiClient from "@/lib/api-client";
-import { GET_DM_CONTACTS_ROUTE } from "@/utils/constants";
+import { GET_DM_CONTACTS_ROUTE, GET_USER_CHANNELS_ROUTE } from "@/utils/constants";
 import { useAppStore } from "@/store";
 import ContactList from "./components/contact-list";
+import CreateNewChannel from "./components/create-channel";
 
 const ContactsContainer = () => {
-  const { setDmContacts, dmContacts } = useAppStore();
+  const { setDmContacts, dmContacts, channels, setChannels } = useAppStore();
 
   useEffect(() => {
     const getContacts = async () => {
@@ -26,7 +27,23 @@ const ContactsContainer = () => {
       }
     }
 
+    const getChannels = async () => {
+      try {
+        const res = await apiClient.get(GET_USER_CHANNELS_ROUTE, {
+          withCredentials: true
+        })
+
+        if (res.data.data) {
+          setChannels(res.data.data);
+        }
+      } catch (error) {
+        console.log("Error fetching channels:", error);
+        toast.error("Failed to fetch channels");
+      }
+    }
+
     getContacts();
+    getChannels();
   }, [])
 
 
@@ -52,6 +69,10 @@ const ContactsContainer = () => {
       <div className="my-5">
         <div className="flex items-center justify-between px-5">
           <Title text={"Channels"} />
+          <CreateNewChannel />
+        </div>
+        <div className="max-h-52 overflow-y-auto scrollbar-hidden">
+          <ContactList contacts={channels} isChannel={true} />
         </div>
       </div>
       <ProfileInfo />

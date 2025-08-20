@@ -171,3 +171,34 @@ export const addToContact = async ({ userId, contactId }) => {
     console.log(error)
   }
 }
+
+export const getAllContacts = async (req, res) => {
+  try {
+    const { userId } = req.user
+
+    const users = await User.find(
+      { _id: { $ne: userId } },
+      "firstName lastName email _id"
+    );
+
+    const contacts = users.map(user => ({
+      label: user.firstName ? `${user.firstName} ${user.lastName}` : user.email,
+      value: user._id,
+    }))
+
+    return successResponse({
+      res,
+      status: 200,
+      message: "Success",
+      data: contacts
+    })
+
+  } catch (error) {
+    console.log(error)
+    return errorResponse({
+      res,
+      status: error.status || 500,
+      message: error.message || "Internal server error."
+    })
+  }
+}
